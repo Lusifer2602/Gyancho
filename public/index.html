@@ -55,6 +55,13 @@
         <button id="sendNoteBtn">Send Note</button>
         <button id="endSessionBtn">End Session</button>
       </div>
+
+      <div id="fileUploadArea">
+        <h3>Files</h3>
+        <input type="file" id="fileInput">
+        <button id="uploadFileBtn">Upload File</button>
+        <ul id="fileList"></ul>
+      </div>
     </div>
   </div>
 
@@ -193,4 +200,4 @@ socket.on('receive-note', ({ from, note }) => {
     });
   </script>
 </body>
-</html> 
+</html>
