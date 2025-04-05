@@ -27,10 +27,11 @@ Gyancho is an algorithm-based study platform designed to connect students for fo
 - **Standard Study Sessions:**  
   Focused, one-on-one study sessions without any additional features.
   
-- **Premium Upgrades:**  
   - Add friends to save your favorite study partners.  
   - Create group study rooms with more than three participants—ideal for collaborative group study, albeit with a reminder that larger groups may impact attention span.
 
 Gyancho is built exclusively for academic engagement, ensuring that every feature is aimed at fostering an environment of genuine study and intellectual growth, free from the distractions of traditional social networking apps.
 
+
 Happy studying with Gyancho!
+ 
