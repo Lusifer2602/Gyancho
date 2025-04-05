@@ -180,99 +180,12 @@ socket.on('receive-note', ({ from, note }) => {
     });
 
 // ...existing code...
-
-// Video Chat Elements
-const videoChatArea = document.getElementById('videoChatArea');
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
-const startVideoChatBtn = document.getElementById('startVideoChatBtn');
-const stopVideoChatBtn = document.getElementById('stopVideoChatBtn');
-
-let localStream = null;
-let peerConnection = null;
-const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
-// Start Video Chat
-startVideoChatBtn.addEventListener('click', async () => {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    localVideo.srcObject = localStream;
-
-    peerConnection = new RTCPeerConnection(rtcConfig);
-    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-    peerConnection.ontrack = (event) => {
-      remoteVideo.srcObject = event.streams[0];
-    };
-
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit('ice-candidate', { candidate: event.candidate });
-      }
-    };
-
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    socket.emit('start-video-chat', { offer, partnerUsername: partnerNameSpan.textContent });
-
-    videoChatArea.classList.remove('hidden');
-    startVideoChatBtn.classList.add('hidden');
-    stopVideoChatBtn.classList.remove('hidden');
-  } catch (error) {
-    console.error('Error starting video chat:', error);
-  }
-});
-
-// Stop Video Chat
-stopVideoChatBtn.addEventListener('click', () => {
-  if (peerConnection) peerConnection.close();
-  if (localStream) localStream.getTracks().forEach(track => track.stop());
-
-  videoChatArea.classList.add('hidden');
-  startVideoChatBtn.classList.remove('hidden');
-  stopVideoChatBtn.classList.add('hidden');
-  socket.emit('stop-video-chat');
-});
-
-// Handle Video Chat Offer
-socket.on('video-chat-offer', async ({ offer, from }) => {
-  if (!confirm(`${from} wants to start a video chat. Accept?`)) return;
-
-  peerConnection = new RTCPeerConnection(rtcConfig);
-  peerConnection.ontrack = (event) => {
-    remoteVideo.srcObject = event.streams[0];
-  };
-
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
-      socket.emit('ice-candidate', { candidate: event.candidate });
-    }
-  };
-
-  await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  localVideo.srcObject = localStream;
-  localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-  const answer = await peerConnection.createAnswer();
-  await peerConnection.setLocalDescription(answer);
-  socket.emit('video-chat-answer', { answer });
-  videoChatArea.classList.remove('hidden');
-});
-
-// Handle Video Chat Answer
-socket.on('video-chat-answer', async ({ answer }) => {
-  await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-});
-
-// Handle ICE Candidate
-socket.on('ice-candidate', async ({ candidate }) => {
-  try {
-    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-  } catch (error) {
-    console.error('Error adding received ICE candidate:', error);
-  }
-});
+    // Handle user disconnection
+    socket.on('user-disconnected', (username) => {
+      const li = document.createElement('li');
+      li.textContent = `${username} has left Gyancho.`;
+      userList.appendChild(li);
+    }); 
 
     // Logout
     logoutBtn.addEventListener('click', () => {
