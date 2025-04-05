@@ -14,6 +14,7 @@ io.on('connection', (socket) => {
   // New user joins
   socket.on('new-user', (user) => {
     users[socket.id] = { ...user, socketId: socket.id };
+    console.log(`User added: ${user.username}`);
     io.emit('update-users', Object.values(users));
   });
 
@@ -51,6 +52,28 @@ io.on('connection', (socket) => {
     console.log(`${user.username} reported ${reportedUsername}`);
   });
 
+
+  
+// Server-side (Node.js)
+// filepath: /workspaces/Gyancho/server.js
+io.on('connection', (socket) => {
+  socket.on('start-livestream', ({ offer }) => {
+    socket.broadcast.emit('livestream-offer', { offer, from: socket.id });
+  });
+
+  socket.on('livestream-answer', ({ answer }) => {
+    socket.broadcast.emit('livestream-answer', { answer });
+  });
+
+  socket.on('ice-candidate', ({ candidate }) => {
+    socket.broadcast.emit('ice-candidate', { candidate });
+  });
+
+  socket.on('stop-livestream', () => {
+    socket.broadcast.emit('stop-livestream');
+  });
+});
+  
   // Block user
   socket.on('block-user', ({ blockedUsername }) => {
     const user = users[socket.id];
