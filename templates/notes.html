@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Uploaded Notes</title>
+</head>
+<body>
+    <h2>Uploaded Notes</h2>
+    <ul>
+        {% for file in files %}
+            <li><a href="{{ url_for('download_file', filename=file) }}">{{ file }}</a></li>
+        {% endfor %}
+    </ul>
+    <br>
+   
+    <div id="upload_button"> 
+    <a href="{{ url_for('upload_notes') }}" style="color: yellow; text-decoration:none;">Upload More Notes</a>
+    </div>
+
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Available Lectures</h2>
+<ul>
+    {% for lecture in lectures %}
+        <li>
+            <h3><i><b>{{ lecture.title }} by {{ lecture.professor }}</b></i></h3><br>
+            <video controls width="600">
+                <source src="{{ url_for('uploaded_file', filename=lecture.filename) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

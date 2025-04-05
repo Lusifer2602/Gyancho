@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edu Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+        <a href="https://bmu.ac.in"><img src="static\css\images\logo_eduastt.png" alt="logo" height="100px" width="105px" ></a>
+        <h1><span style="font-family: comic sans ms; font-size: 42px; text-shadow: 2px 2px 4px #000000;"><a href="{{ url_for('home') }}"> EDU ASSISTANT</a></span></h1>
+       </div>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            {% if 'username' in session %}
+                {% if session['role'] == 'teacher' %}
+                    <a href="{{ url_for('publish') }}">Publish Lecture</a>
+                    <a href="{{ url_for('stream') }}">Stream Lecture</a>
+                {% endif %}
+                <a href="{{url_for('notes')}}">Notes</a>
+                <a href="{{ url_for('view_lectures') }}">View Lectures</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <a href="https://github.com/Daddy-Demonic">Copyright by Hellfl4re ©|2024</a>
+    </footer>
+</body>
+</html>

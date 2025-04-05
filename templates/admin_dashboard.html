@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+<h3>Manage Users</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for username, details in users.items() %}
+        <tr>
+            <td>{{ username }}</td>
+            <td>{{ details.role }}</td>
+            <td>
+                {% if username != 'admin' %}
+                <a href="{{ url_for('delete_user', username=username) }}">Delete</a>
+                {% endif %}
+            </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<tr>
+    <td><a href="{{ url_for('add_user') }}" id="adddi">Add New User</a></td>
+</tr>
+<h3>Manage Lectures</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Professor</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lecture in lectures %}
+        <tr>
+            <td>{{ lecture.title }}</td>
+            <td>{{ lecture.professor }}</td>
+            <td>
+                <a href="{{ url_for('delete_lecture', filename=lecture.filename) }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
