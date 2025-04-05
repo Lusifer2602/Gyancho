@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyMate Dark App</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<body>
+  <header>
+    <h1>StudyMate</h1>
+    <p>Your algorithm-based study partner finder</p>
+  </header>
+
+  <!-- Login / Profile Creation Screen -->
+  <div id="loginScreen">
+    <form id="loginForm">
+      <h2>Login / Create Profile</h2>
+      <input type="text" id="username" placeholder="Enter your name" required />
+      <input type="text" id="subject" placeholder="Currently Studying Subject" />
+      <select id="studyPreference">
+        <option value="teach">Teach a Dumber Student</option>
+        <option value="learn">Learn from a Smarter Student</option>
+        <option value="collaborate">Study Collaboratively</option>
+      </select>
+      <input type="number" id="smartnessLevel" placeholder="Your Smartness Level (1-10)" min="1" max="10" />
+      <select id="genderPreference">
+        <option value="any">Any</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <!-- Main App Screen -->
+  <div id="appScreen" class="hidden">
+    <nav>
+      <button id="reportUserBtn">Report User</button>
+      <button id="blockUserBtn">Block User</button>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+    <div class="container">
+      <h2>Welcome, <span id="displayUsername"></span></h2>
+      <p>Currently studying: <span id="displaySubject"></span></p>
+      
+      <h3>Active Users (Matching Your Criteria)</h3>
+      <ul id="userList">
+        <!-- Dynamically populated -->
+      </ul>
+
+      <h3>Study Session</h3>
+      <button id="startSessionBtn">Start Study Session</button>
+      <div id="sessionArea" class="hidden">
+        <p>Paired with: <span id="partnerName"></span></p>
+        <p>Study Mode: <span id="sessionMode"></span></p>
+        <textarea id="notes" placeholder="Exchange notes or files here..."></textarea>
+        <button id="endSessionBtn">End Session</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // In-memory users array for demonstration.
+    const users = [];
+    let currentUser = null;
+
+    // DOM Elements
+    const loginScreen = document.getElementById('loginScreen');
+    const appScreen = document.getElementById('appScreen');
+    const loginForm = document.getElementById('loginForm');
+    const displayUsername = document.getElementById('displayUsername');
+    const displaySubject = document.getElementById('displaySubject');
+    const userList = document.getElementById('userList');
+    const startSessionBtn = document.getElementById('startSessionBtn');
+    const sessionArea = document.getElementById('sessionArea');
+    const partnerNameSpan = document.getElementById('partnerName');
+    const sessionModeSpan = document.getElementById('sessionMode');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const reportUserBtn = document.getElementById('reportUserBtn');
+    const blockUserBtn = document.getElementById('blockUserBtn');
+    const endSessionBtn = document.getElementById('endSessionBtn');
+
+    // Login/Profile Creation
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const subject = document.getElementById('subject').value;
+      const studyPreference = document.getElementById('studyPreference').value;
+      const smartnessLevel = parseInt(document.getElementById('smartnessLevel').value);
+      const genderPreference = document.getElementById('genderPreference').value;
+      
+      // Create user profile object
+      currentUser = {
+        username,
+        subject,
+        studyPreference,
+        smartnessLevel,
+        genderPreference,
+        blocked: [],
+        reports: []
+      };
+      
+      // Add to our users "database"
+      users.push(currentUser);
+      
+      // Switch to the app screen
+      loginScreen.classList.add('hidden');
+      appScreen.classList.remove('hidden');
+      displayUsername.textContent = username;
+      displaySubject.textContent = subject;
+      
+      updateUserList();
+    });
+
+    // Update user list with active users (for demo, simply list all other users)
+    function updateUserList() {
+      userList.innerHTML = '';
+      users.forEach(user => {
+        if (user.username !== currentUser.username && !currentUser.blocked.includes(user.username)) {
+          const li = document.createElement('li');
+          li.textContent = `${user.username} - ${user.subject}`;
+          // Clicking on a user will simulate pairing for a study session
+          li.addEventListener('click', () => {
+            partnerNameSpan.textContent = user.username;
+            sessionModeSpan.textContent = currentUser.studyPreference;
+            sessionArea.classList.remove('hidden');
+          });
+          userList.appendChild(li);
+        }
+      });
+    }
+
+    // Start a study session by pairing with a matching user
+    startSessionBtn.addEventListener('click', () => {
+      if (users.length > 1) {
+        // Basic matching algorithm: pick the first available user not blocked
+        const partner = users.find(u => u.username !== currentUser.username && !currentUser.blocked.includes(u.username));
+        if (partner) {
+          partnerNameSpan.textContent = partner.username;
+          sessionModeSpan.textContent = currentUser.studyPreference;
+          sessionArea.classList.remove('hidden');
+        } else {
+          alert('No matching users found.');
+        }
+      } else {
+        alert('No other users online.');
+      }
+    });
+
+    // End the study session and collect rating
+    endSessionBtn.addEventListener('click', () => {
+      const rating = prompt('Rate your study partner (1-5):');
+      if (rating) {
+        alert('Thanks for your feedback!');
+        sessionArea.classList.add('hidden');
+      }
+    });
+
+    // Report a user by username
+    reportUserBtn.addEventListener('click', () => {
+      const reportedUser = prompt('Enter the username to report:');
+      if (reportedUser) {
+        currentUser.reports.push(reportedUser);
+        alert('User reported.');
+      }
+    });
+
+    // Block a user by username
+    blockUserBtn.addEventListener('click', () => {
+      const blockUser = prompt('Enter the username to block:');
+      if (blockUser) {
+        currentUser.blocked.push(blockUser);
+        alert('User blocked.');
+        updateUserList();
+      }
+    });
+
+    // Logout (reload the page for demo purposes)
+    logoutBtn.addEventListener('click', () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
