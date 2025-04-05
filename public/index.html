@@ -143,18 +143,24 @@
     });
 
     // Send note
-    sendNoteBtn.addEventListener('click', () => {
-      const note = notesTextarea.value.trim();
-      if (note && partnerNameSpan.textContent) {
-        socket.emit('send-note', { partnerUsername: partnerNameSpan.textContent, note });
-        notesTextarea.value += `\nYou: ${note}`;
-      }
-    });
+sendNoteBtn.addEventListener('click', () => {
+  const note = notesTextarea.value.trim();
+  if (note && partnerNameSpan.textContent) {
+    socket.emit('send-note', { partnerUsername: partnerNameSpan.textContent, note });
+    // Append the new message to the textarea
+    const newMessage = `You: ${note}\n`;
+    notesTextarea.value += newMessage;
+    notesTextarea.scrollTop = notesTextarea.scrollHeight; // Auto-scroll to the bottom
+  }
+});
 
     // Receive note
-    socket.on('receive-note', ({ from, note }) => {
-      notesTextarea.value += `\n${from}: ${note}`;
-    });
+socket.on('receive-note', ({ from, note }) => {
+  // Append the received message to the textarea
+  const newMessage = `${from}: ${note}\n`;
+  notesTextarea.value += newMessage;
+  notesTextarea.scrollTop = notesTextarea.scrollHeight; // Auto-scroll to the bottom
+});
 
     // End session
     endSessionBtn.addEventListener('click', () => {
