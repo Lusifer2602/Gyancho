@@ -52,28 +52,33 @@ io.on('connection', (socket) => {
     console.log(`${user.username} reported ${reportedUsername}`);
   });
 
+// ...existing code...
 
-  
-// Server-side (Node.js)
-// filepath: /workspaces/Gyancho/server.js
-io.on('connection', (socket) => {
-  socket.on('start-livestream', ({ offer }) => {
-    socket.broadcast.emit('livestream-offer', { offer, from: socket.id });
+  io.on('connection', (socket) => {
+    // Handle Video Chat Offer
+    socket.on('start-video-chat', ({ offer, partnerUsername }) => {
+      const partner = Object.values(users).find(u => u.username === partnerUsername);
+      if (partner) {
+        io.to(partner.socketId).emit('video-chat-offer', { offer, from: users[socket.id].username });
+      }
+    });
+
+    // Handle Video Chat Answer
+    socket.on('video-chat-answer', ({ answer }) => {
+      socket.broadcast.emit('video-chat-answer', { answer });
+    });
+
+    // Handle ICE Candidate
+    socket.on('ice-candidate', ({ candidate }) => {
+      socket.broadcast.emit('ice-candidate', { candidate });
+    });
+
+    // Stop Video Chat
+    socket.on('stop-video-chat', () => {
+      socket.broadcast.emit('stop-video-chat');
+    });
   });
 
-  socket.on('livestream-answer', ({ answer }) => {
-    socket.broadcast.emit('livestream-answer', { answer });
-  });
-
-  socket.on('ice-candidate', ({ candidate }) => {
-    socket.broadcast.emit('ice-candidate', { candidate });
-  });
-
-  socket.on('stop-livestream', () => {
-    socket.broadcast.emit('stop-livestream');
-  });
-});
-  
   // Block user
   socket.on('block-user', ({ blockedUsername }) => {
     const user = users[socket.id];

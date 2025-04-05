@@ -54,13 +54,6 @@
         <textarea id="notes" placeholder="Exchange notes here..."></textarea>
         <button id="sendNoteBtn">Send Note</button>
         <button id="endSessionBtn">End Session</button>
-        <div id="livestreamArea" class="hidden">
-          <h3>Livestream</h3>
-          <video id="localVideo" autoplay muted></video>
-          <video id="remoteVideo" autoplay></video>
-          <button id="startLivestreamBtn">Start Livestream</button>
-          <button id="stopLivestreamBtn" class="hidden">Stop Livestream</button>
-        </div>
       </div>
     </div>
   </div>
@@ -185,26 +178,27 @@ socket.on('receive-note', ({ from, note }) => {
         alert('User blocked on Gyancho.');
       }
     });
+
 // ...existing code...
 
-// Livestream Elements
-const livestreamArea = document.getElementById('livestreamArea');
+// Video Chat Elements
+const videoChatArea = document.getElementById('videoChatArea');
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
-const startLivestreamBtn = document.getElementById('startLivestreamBtn');
-const stopLivestreamBtn = document.getElementById('stopLivestreamBtn');
+const startVideoChatBtn = document.getElementById('startVideoChatBtn');
+const stopVideoChatBtn = document.getElementById('stopVideoChatBtn');
 
 let localStream = null;
 let peerConnection = null;
-const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-// Start Livestream
-startLivestreamBtn.addEventListener('click', async () => {
+// Start Video Chat
+startVideoChatBtn.addEventListener('click', async () => {
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     localVideo.srcObject = localStream;
 
-    peerConnection = new RTCPeerConnection(config);
+    peerConnection = new RTCPeerConnection(rtcConfig);
     localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
     peerConnection.ontrack = (event) => {
@@ -219,32 +213,32 @@ startLivestreamBtn.addEventListener('click', async () => {
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    socket.emit('start-livestream', { offer });
+    socket.emit('start-video-chat', { offer, partnerUsername: partnerNameSpan.textContent });
 
-    livestreamArea.classList.remove('hidden');
-    startLivestreamBtn.classList.add('hidden');
-    stopLivestreamBtn.classList.remove('hidden');
+    videoChatArea.classList.remove('hidden');
+    startVideoChatBtn.classList.add('hidden');
+    stopVideoChatBtn.classList.remove('hidden');
   } catch (error) {
-    console.error('Error starting livestream:', error);
+    console.error('Error starting video chat:', error);
   }
 });
 
-// Stop Livestream
-stopLivestreamBtn.addEventListener('click', () => {
+// Stop Video Chat
+stopVideoChatBtn.addEventListener('click', () => {
   if (peerConnection) peerConnection.close();
   if (localStream) localStream.getTracks().forEach(track => track.stop());
 
-  livestreamArea.classList.add('hidden');
-  startLivestreamBtn.classList.remove('hidden');
-  stopLivestreamBtn.classList.add('hidden');
-  socket.emit('stop-livestream');
+  videoChatArea.classList.add('hidden');
+  startVideoChatBtn.classList.remove('hidden');
+  stopVideoChatBtn.classList.add('hidden');
+  socket.emit('stop-video-chat');
 });
 
-// Handle Livestream Offer
-socket.on('livestream-offer', async ({ offer, from }) => {
-  if (!confirm(`${from} wants to start a livestream. Accept?`)) return;
+// Handle Video Chat Offer
+socket.on('video-chat-offer', async ({ offer, from }) => {
+  if (!confirm(`${from} wants to start a video chat. Accept?`)) return;
 
-  peerConnection = new RTCPeerConnection(config);
+  peerConnection = new RTCPeerConnection(rtcConfig);
   peerConnection.ontrack = (event) => {
     remoteVideo.srcObject = event.streams[0];
   };
@@ -262,12 +256,12 @@ socket.on('livestream-offer', async ({ offer, from }) => {
 
   const answer = await peerConnection.createAnswer();
   await peerConnection.setLocalDescription(answer);
-  socket.emit('livestream-answer', { answer });
-  livestreamArea.classList.remove('hidden');
+  socket.emit('video-chat-answer', { answer });
+  videoChatArea.classList.remove('hidden');
 });
 
-// Handle Livestream Answer
-socket.on('livestream-answer', async ({ answer }) => {
+// Handle Video Chat Answer
+socket.on('video-chat-answer', async ({ answer }) => {
   await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 });
 
@@ -279,6 +273,7 @@ socket.on('ice-candidate', async ({ candidate }) => {
     console.error('Error adding received ICE candidate:', error);
   }
 });
+
     // Logout
     logoutBtn.addEventListener('click', () => {
       location.reload();
