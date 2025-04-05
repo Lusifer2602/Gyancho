@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudyMate Dark App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gyancho</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<link rel="stylesheet" href="style.css">
 <body>
   <header>
-    <h1>StudyMate</h1>
+    <h1>Gyancho</h1>
     <p>Your algorithm-based study partner finder</p>
   </header>
 
-  <!-- Login / Profile Creation Screen -->
+  <!-- Login Screen -->
   <div id="loginScreen">
     <form id="loginForm">
-      <h2>Login / Create Profile</h2>
-      <input type="text" id="username" placeholder="Enter your name" required />
-      <input type="text" id="subject" placeholder="Currently Studying Subject" />
+      <h2>Welcome to Gyancho</h2>
+      <input type="text" id="username" placeholder="Enter your name" required>
+      <input type="text" id="subject" placeholder="Currently Studying Subject">
       <select id="studyPreference">
         <option value="teach">Teach a Dumber Student</option>
         <option value="learn">Learn from a Smarter Student</option>
         <option value="collaborate">Study Collaboratively</option>
       </select>
-      <input type="number" id="smartnessLevel" placeholder="Your Smartness Level (1-10)" min="1" max="10" />
+      <input type="number" id="smartnessLevel" placeholder="Smartness Level (1-10)" min="1" max="10">
       <select id="genderPreference">
         <option value="any">Any</option>
         <option value="male">Male</option>
         <option value="female">Female</option>
       </select>
-      <button type="submit">Login</button>
+      <button type="submit">Join Gyancho</button>
     </form>
   </div>
 
@@ -38,32 +38,32 @@
     <nav>
       <button id="reportUserBtn">Report User</button>
       <button id="blockUserBtn">Block User</button>
-      <button id="logoutBtn">Logout</button>
+      <button id="logoutBtn">Leave Gyancho</button>
     </nav>
     <div class="container">
-      <h2>Welcome, <span id="displayUsername"></span></h2>
-      <p>Currently studying: <span id="displaySubject"></span></p>
+      <h2>Hello, <span id="displayUsername"></span></h2>
+      <p>Studying: <span id="displaySubject"></span></p>
       
-      <h3>Active Users (Matching Your Criteria)</h3>
-      <ul id="userList">
-        <!-- Dynamically populated -->
-      </ul>
+      <h3>Active Gyancho Users</h3>
+      <ul id="userList"></ul>
 
-      <h3>Study Session</h3>
+      <h3>Gyancho Study Session</h3>
       <button id="startSessionBtn">Start Study Session</button>
       <div id="sessionArea" class="hidden">
         <p>Paired with: <span id="partnerName"></span></p>
         <p>Study Mode: <span id="sessionMode"></span></p>
-        <textarea id="notes" placeholder="Exchange notes or files here..."></textarea>
+        <textarea id="notes" placeholder="Exchange notes here..."></textarea>
+        <button id="sendNoteBtn">Send Note</button>
         <button id="endSessionBtn">End Session</button>
       </div>
     </div>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // In-memory users array for demonstration.
-    const users = [];
+    const socket = io('http://10.0.0.186:3000'); // Replace with your server's IP
     let currentUser = null;
+    let users = [];
 
     // DOM Elements
     const loginScreen = document.getElementById('loginScreen');
@@ -76,110 +76,108 @@
     const sessionArea = document.getElementById('sessionArea');
     const partnerNameSpan = document.getElementById('partnerName');
     const sessionModeSpan = document.getElementById('sessionMode');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const notesTextarea = document.getElementById('notes');
+    const sendNoteBtn = document.getElementById('sendNoteBtn');
+    const endSessionBtn = document.getElementById('endSessionBtn');
     const reportUserBtn = document.getElementById('reportUserBtn');
     const blockUserBtn = document.getElementById('blockUserBtn');
-    const endSessionBtn = document.getElementById('endSessionBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-    // Login/Profile Creation
+    // Login
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const username = document.getElementById('username').value;
-      const subject = document.getElementById('subject').value;
-      const studyPreference = document.getElementById('studyPreference').value;
-      const smartnessLevel = parseInt(document.getElementById('smartnessLevel').value);
-      const genderPreference = document.getElementById('genderPreference').value;
-      
-      // Create user profile object
       currentUser = {
-        username,
-        subject,
-        studyPreference,
-        smartnessLevel,
-        genderPreference,
+        username: document.getElementById('username').value,
+        subject: document.getElementById('subject').value || 'Not specified',
+        studyPreference: document.getElementById('studyPreference').value,
+        smartnessLevel: parseInt(document.getElementById('smartnessLevel').value) || 5,
+        genderPreference: document.getElementById('genderPreference').value,
         blocked: [],
         reports: []
       };
-      
-      // Add to our users "database"
-      users.push(currentUser);
-      
-      // Switch to the app screen
+      socket.emit('new-user', currentUser);
       loginScreen.classList.add('hidden');
       appScreen.classList.remove('hidden');
-      displayUsername.textContent = username;
-      displaySubject.textContent = subject;
-      
-      updateUserList();
+      displayUsername.textContent = currentUser.username;
+      displaySubject.textContent = currentUser.subject;
     });
 
-    // Update user list with active users (for demo, simply list all other users)
-    function updateUserList() {
+    // Update user list
+    socket.on('update-users', (allUsers) => {
+      users = allUsers;
       userList.innerHTML = '';
       users.forEach(user => {
         if (user.username !== currentUser.username && !currentUser.blocked.includes(user.username)) {
           const li = document.createElement('li');
-          li.textContent = `${user.username} - ${user.subject}`;
-          // Clicking on a user will simulate pairing for a study session
-          li.addEventListener('click', () => {
-            partnerNameSpan.textContent = user.username;
-            sessionModeSpan.textContent = currentUser.studyPreference;
-            sessionArea.classList.remove('hidden');
-          });
+          li.textContent = `${user.username} - ${user.subject} (Level ${user.smartnessLevel})`;
+          li.addEventListener('click', () => startSession(user.username));
           userList.appendChild(li);
         }
       });
+    });
+
+    // Start session
+    function startSession(partnerUsername) {
+      socket.emit('start-session', { partnerUsername });
     }
 
-    // Start a study session by pairing with a matching user
     startSessionBtn.addEventListener('click', () => {
-      if (users.length > 1) {
-        // Basic matching algorithm: pick the first available user not blocked
-        const partner = users.find(u => u.username !== currentUser.username && !currentUser.blocked.includes(u.username));
-        if (partner) {
-          partnerNameSpan.textContent = partner.username;
-          sessionModeSpan.textContent = currentUser.studyPreference;
-          sessionArea.classList.remove('hidden');
-        } else {
-          alert('No matching users found.');
-        }
-      } else {
-        alert('No other users online.');
+      const partner = users.find(u => u.username !== currentUser.username && !currentUser.blocked.includes(u.username));
+      if (partner) startSession(partner.username);
+      else alert('No available Gyancho users.');
+    });
+
+    // Session started
+    socket.on('session-started', ({ partner, mode }) => {
+      partnerNameSpan.textContent = partner.username;
+      sessionModeSpan.textContent = mode;
+      sessionArea.classList.remove('hidden');
+      notesTextarea.value = '';
+    });
+
+    // Send note
+    sendNoteBtn.addEventListener('click', () => {
+      const note = notesTextarea.value.trim();
+      if (note && partnerNameSpan.textContent) {
+        socket.emit('send-note', { partnerUsername: partnerNameSpan.textContent, note });
+        notesTextarea.value += `\nYou: ${note}`;
       }
     });
 
-    // End the study session and collect rating
+    // Receive note
+    socket.on('receive-note', ({ from, note }) => {
+      notesTextarea.value += `\n${from}: ${note}`;
+    });
+
+    // End session
     endSessionBtn.addEventListener('click', () => {
-      const rating = prompt('Rate your study partner (1-5):');
-      if (rating) {
-        alert('Thanks for your feedback!');
-        sessionArea.classList.add('hidden');
-      }
+      sessionArea.classList.add('hidden');
     });
 
-    // Report a user by username
+    // Report user
     reportUserBtn.addEventListener('click', () => {
-      const reportedUser = prompt('Enter the username to report:');
-      if (reportedUser) {
-        currentUser.reports.push(reportedUser);
-        alert('User reported.');
+      const reportedUsername = prompt('Enter username to report:');
+      if (reportedUsername) {
+        currentUser.reports.push(reportedUsername);
+        socket.emit('report-user', { reportedUsername });
+        alert('User reported to Gyancho.');
       }
     });
 
-    // Block a user by username
+    // Block user
     blockUserBtn.addEventListener('click', () => {
-      const blockUser = prompt('Enter the username to block:');
-      if (blockUser) {
-        currentUser.blocked.push(blockUser);
-        alert('User blocked.');
-        updateUserList();
+      const blockedUsername = prompt('Enter username to block:');
+      if (blockedUsername) {
+        currentUser.blocked.push(blockedUsername);
+        socket.emit('block-user', { blockedUsername });
+        alert('User blocked on Gyancho.');
       }
     });
 
-    // Logout (reload the page for demo purposes)
+    // Logout
     logoutBtn.addEventListener('click', () => {
       location.reload();
     });
   </script>
 </body>
-</html>
+</html> 
