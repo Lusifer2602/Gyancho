@@ -1,12 +1,18 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
+// Configure multer for file uploads
+const upload = multer({ dest: 'uploads/' });
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static('public'));
 
-// Store users by socket ID
+// Store users and session data
 const users = {};
+const sessions = {}; // Store chat history and files for each session
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
@@ -23,6 +29,9 @@ io.on('connection', (socket) => {
     const user = users[socket.id];
     const partner = Object.values(users).find(u => u.username === partnerUsername);
     if (partner && partner.socketId !== socket.id) {
+      const sessionId = `${socket.id}-${partner.socketId}`;
+      sessions[sessionId] = { chatHistory: [], files: [] }; // Initialize session data
+
       io.to(partner.socketId).emit('session-started', {
         partner: user,
         mode: user.studyPreference
@@ -39,7 +48,7 @@ io.on('connection', (socket) => {
     const partner = Object.values(users).find(u => u.username === partnerUsername);
     if (partner) {
       io.to(partner.socketId).emit('receive-note', {
-        from: users[socket.id].username,
+from: users[socket.id].username,
         note
       });
     }
@@ -52,31 +61,27 @@ io.on('connection', (socket) => {
     console.log(`${user.username} reported ${reportedUsername}`);
   });
 
-// ...existing code...
+  // Handle Video Chat Offer
+  socket.on('start-video-chat', ({ offer, partnerUsername }) => {
+    const partner = Object.values(users).find(u => u.username === partnerUsername);
+    if (partner) {
+      io.to(partner.socketId).emit('video-chat-offer', { offer, from: users[socket.id].username });
+    }
+  });
 
-  io.on('connection', (socket) => {
-    // Handle Video Chat Offer
-    socket.on('start-video-chat', ({ offer, partnerUsername }) => {
-      const partner = Object.values(users).find(u => u.username === partnerUsername);
-      if (partner) {
-        io.to(partner.socketId).emit('video-chat-offer', { offer, from: users[socket.id].username });
-      }
-    });
+  // Handle Video Chat Answer
+  socket.on('video-chat-answer', ({ answer }) => {
+    socket.broadcast.emit('video-chat-answer', { answer });
+  });
 
-    // Handle Video Chat Answer
-    socket.on('video-chat-answer', ({ answer }) => {
-      socket.broadcast.emit('video-chat-answer', { answer });
-    });
+  // Handle ICE Candidate
+  socket.on('ice-candidate', ({ candidate }) => {
+    socket.broadcast.emit('ice-candidate', { candidate });
+  });
 
-    // Handle ICE Candidate
-    socket.on('ice-candidate', ({ candidate }) => {
-      socket.broadcast.emit('ice-candidate', { candidate });
-    });
-
-    // Stop Video Chat
-    socket.on('stop-video-chat', () => {
-      socket.broadcast.emit('stop-video-chat');
-    });
+  // Stop Video Chat
+  socket.on('stop-video-chat', () => {
+    socket.broadcast.emit('stop-video-chat');
   });
 
   // Block user

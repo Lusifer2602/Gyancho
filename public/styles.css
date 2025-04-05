@@ -156,3 +156,16 @@ body {
   
   textarea:focus {
     border-color: #4a90;}
+
+    #fileUploadArea {
+      margin-top: 20px;
+    }
+    
+    #fileList {
+      list-style: none;
+      padding: 0;
+    }
+    
+    #fileList li {
+      margin: 5px 0;
+    }
