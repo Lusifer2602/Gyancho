@@ -1,92 +1,90 @@
 body {
     font-family: 'Courier New', Courier, monospace;
-    background-color: #2b2b2b;
+    background-color: #121212; /* Dark background */
     margin: 0;
     padding: 0;
     padding-top: 15px;
-    color: #faf4f4;
+    color: #ffffff; /* White text */
 }
 
 li a {
-    color: red;
+    color: #FF0000; /* Standard red for links */
     text-decoration: none;  
 }
 
 header {
-    background-color: #2b2b2b;
-    color: #f0f0a0;
+    background-color: #1A1A1A; /* Very dark background for header */
+    color: #ffffff; /* White text in header */
     padding: 15px 10px;
     text-align: left;
-    border-bottom: 5p   x solid lightskyblue;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-bottom: 5px solid #FF0000; /* Standard red border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 header a {
-    color: #86469c;
-    text-shadow: 2px 2px 0 lightskyblue;
+    color: #FF0000; /* Standard red for header links */
+    text-shadow: 2px 2px 0 rgba(255, 0, 0, 0.6);
     text-decoration: none; 
-    text-shadow: #2b2b2b;
 }
 
 header a:hover {
-    color: #86469c;
-    text-shadow: 2px 2px 0 lightskyblue;
-    text-shadow: #cccccc;
+    color: #ffffff; /* White text on hover */
+    text-shadow: 2px 2px 0 rgba(255, 0, 0, 0.8);
 }
 
 nav a {
-    color: #f0f0a0;
+    color: #ffffff; /* White text */
     padding: 10px 15px;
     text-decoration: none;
-    background-color: #444;
-    border: 2px solid lightskyblue;
+    background-color: #333333; /* Dark background for nav links */
+    border: 2px solid #FF0000; /* Standard red border */
     border-radius: 5px;
     margin: 0px;
     display: inline-block;
     font-weight: bold;
-    text-shadow: 0px 0px 0 #ff6f61;
+    text-shadow: 0px 0px 0 rgba(255, 0, 0, 0.6);
     transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-left:5px ;
+    margin-left: 5px;
 }
 
 nav a:hover {
-    background-color: #ff6f61;
+    background-color: #FF0000; /* Standard red background on hover */
     color: #fff;
     transform: translateY(-2px);
 }
 
 tr a {
-    color: #f0f0a0;
+    color: #ffffff; /* White text */
     padding: 5px 12px;
     text-decoration: none;
-    background-color: #444;
-    border: 2px solid #ff6f61;
+    background-color: #333333; /* Dark background for table links */
+    border: 2px solid #FF0000; /* Standard red border for table links */
     margin: 0 5px;
     display: inline-block;
     font-weight: bold;
-    text-shadow: 2px 2px 0 #ff6f61;
+    text-shadow: 2px 2px 0 #FF0000;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 tr a:hover {
-    background-color: #ff6f61;
+    background-color: #FF0000; /* Standard red background on hover */
     color: #fff;
     transform: translateY(-2px);
 }
 
 main {
     padding: 40px;
-    background: linear-gradient(to bottom, #17153b, #433d8b);
-    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #1A1A1A; /* Dark background for main content */
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 h2 {
-    color: #f3eded;
+    color: #ffffff; /* White text */
     text-transform: uppercase;
     letter-spacing: 2px;
     font-size: 28px;
     margin-bottom: 20px;
-    border-bottom: 3px solid #ff6f61;
+    border-bottom: 3px solid #FF0000; /* Standard red border */
     display: inline-block;
     padding-bottom: 5px;
 }
@@ -94,14 +92,14 @@ h2 {
 form {
     max-width: 500px;
     margin: 0 auto;
-    background-color: #fff;
+    background-color: #1A1A1A; /* Dark background for form */
     padding: 20px;
-    border: 3px solid #ff6f61;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border: 3px solid #FF0000; /* Standard red border for form */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 label {
-    color: #2b2b2b;
+    color: #ffffff; /* White text for labels */
     text-align: center;
     display: block;
     margin-bottom: 10px;
@@ -114,10 +112,12 @@ input[type="submit"] {
     width: 95%;
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid #2b2b2b;
-    background-color: #f0f0f0;
+    border: 2px solid #333333; /* Dark border */
+    background-color: #444444; /* Dark background for inputs */
+    color: #ffffff; /* White text */
     font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
+    border-radius: 5px;
 }
 
 input[type="password"],
@@ -126,66 +126,66 @@ input[type="submit"] {
     width: 95%;
     padding: 10px;
     margin-bottom: 20px;
-    border: 2px solid #2b2b2b;
-    background-color: #f0f0f0;
+    border: 2px solid #333333; /* Dark border */
+    background-color: #444444; /* Dark background for inputs */
+    color: #ffffff; /* White text */
     font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
+    border-radius: 5px;
 }
 
-
 input[type="submit"] {
-    margin-left: 12px; ;
-    background-color: #ff6f61;
-    color: #fff;
+    margin-left: 12px;
+    background-color: #FF0000; /* Standard red button */
+    color: #ffffff;
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    text-shadow: 2px 2px 0 #2b2b2b;
+    text-shadow: 2px 2px 0 #333;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 input[type="submit"]:hover {
-    /* text-align: justify; */
-    background-color: #2b2b2b;
-    color: #f0f0a0;
+    background-color: #CC0000; /* Slightly darker red on hover */
+    color: #ffffff;
     transform: translateY(-3px);
 }
 
 footer {
     text-align: center;
     padding-top: 20px;
-    background-color: #2b2b2b;
-    color: #e0e018;
-    border-top: 5px solid lightskyblue;
+    background-color: #1A1A1A; /* Dark footer */
+    color: #FF0000; /* Standard red footer text */
+    border-top: 5px solid #FF0000; /* Standard red border */
     font-size: 15px;
 }
 
 footer a {
-    color: #e0e018; 
-    text-decoration: none; 
+    color: #FF0000;
+    text-decoration: none;
     text-shadow: #2b2b2b;
 }
 
 footer a:hover {
-    color: #ff6f61;
-    text-shadow: #cccccc;
+    color: #ffffff;
+    text-shadow: #FF0000;
 }
 
-#upload_button{
-    color: #f0f0a0;
+#upload_button {
+    color: #ffffff;
     padding: 5px 12px;
     border-radius: 30px;
     text-decoration: none;
-    background-color: rgb(158, 127, 195);
-    border: 2px solid lightskyblue;
+    background-color: #FF0000; /* Standard red button */
+    border: 2px solid #FF0000; /* Standard red border */
     margin: 0 5px;
     display: inline-block;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#upload_button:hover{
-    background-color:darkorchid;
+#upload_button:hover {
+    background-color: #CC0000; /* Slightly darker red on hover */
     color: #fff;
     transform: translateY(-2px);
 }
@@ -196,21 +196,20 @@ footer a:hover {
 }
 
 #adddi {
-    color: #f0f0a0;
+    color: #ffffff;
     padding: 5px 12px;
     text-decoration: none;
-    background-color: #444;
-    border: 2px solid #ff6f61;
+    background-color: #333333; /* Dark background for button */
+    border: 2px solid #FF0000; /* Standard red border */
     margin: 0 5px;
     display: inline-block;
     font-weight: bold;
-    text-shadow: 2px 2px 0 #ff6f61;
+    text-shadow: 2px 2px 0 #FF0000;
     transition: background-color 0.3s ease, transform 0.2s ease;
-
 }
 
 #adddi a:hover {
-    background-color: #ff6f61;
+    background-color: #FF0000; /* Standard red background on hover */
     color: #fff;
     transform: translateY(-2px);
 }
