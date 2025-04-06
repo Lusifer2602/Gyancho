@@ -275,7 +275,7 @@ def uploaded_file(filename):
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
-    if not os.path.exists('le   tures.txt'):
+    if not os.path.exists('lectures.txt'):
         open('lectures.txt', 'w').close()
     if not os.path.exists('announcements.txt'):
         open('announcements.txt', 'w').close()
