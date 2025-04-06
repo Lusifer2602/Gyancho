@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # Configuration
 app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'xlsx', 'docx', 'pptx', 'mp4', 'avi', 'mov', 'wmv'}
+app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'xlsx', 'docx', 'pptx', 'mp4', 'mp3', 'jpg', 'png', 'avi', 'mov', 'wmv'}
 app.secret_key = 'supersecretkey'
 
 # Simple in-memory user database
@@ -275,7 +275,7 @@ def uploaded_file(filename):
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
-    if not os.path.exists('lectures.txt'):
+    if not os.path.exists('le   tures.txt'):
         open('lectures.txt', 'w').close()
     if not os.path.exists('announcements.txt'):
         open('announcements.txt', 'w').close()
