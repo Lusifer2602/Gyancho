@@ -277,4 +277,9 @@ def uploaded_file(filename):
 #         os.makedirs(app.config['UPLOAD_FOLDER'])
 #     app.run(debug=True)
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+    app.run(debug=True, host='0.0.0.0')
